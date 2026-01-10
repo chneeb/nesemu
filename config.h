@@ -86,6 +86,9 @@
 //----------------------------------
 //Enable only one controller type!!!
 //----------------------------------
+// Some (3rd party) NES/SNES controllers may need slower clocks to work properly...
+// If you get erratic button behaviour try to change to a higher value, but no more than 6 should be needed
+#define CONTROLLER_TIMING 0 // delay in us
 
 // NES input pin mapping 
 //       ___

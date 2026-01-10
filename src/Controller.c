@@ -88,16 +88,16 @@ int NES_poll()
 {
   int buttons = 0;
   digitalWrite(CONFIG_HW_NES_LATCH, 1);
-  delayMicroseconds(0);
+  delayMicroseconds(CONTROLLER_TIMING);
   digitalWrite(CONFIG_HW_NES_LATCH, 0);
-  delayMicroseconds(0);
+  delayMicroseconds(CONTROLLER_TIMING);
   for (int i = 0; i < 8; i++)
   {
     buttons |= (digitalRead(CONFIG_HW_NES_DAT) << i);
     digitalWrite(CONFIG_HW_NES_CLK, 0);
-    delayMicroseconds(0);
+    delayMicroseconds(CONTROLLER_TIMING);
     digitalWrite(CONFIG_HW_NES_CLK, 1);
-    delayMicroseconds(0);
+    delayMicroseconds(CONTROLLER_TIMING);
   }
   return buttons;
 }
@@ -134,16 +134,16 @@ int SNES_poll()
 {
   int buttons = 0;
   digitalWrite(CONFIG_HW_SNES_LATCH, 1);
-  delayMicroseconds(0);
+  delayMicroseconds(CONTROLLER_TIMING);
   digitalWrite(CONFIG_HW_SNES_LATCH, 0);
-  delayMicroseconds(0);
+  delayMicroseconds(CONTROLLER_TIMING);
   for (int i = 0; i < 12; i++)
   {
     buttons |= (digitalRead(CONFIG_HW_SNES_DAT) << i);
     digitalWrite(CONFIG_HW_SNES_CLK, 0);
-    delayMicroseconds(0);
+    delayMicroseconds(CONTROLLER_TIMING);
     digitalWrite(CONFIG_HW_SNES_CLK, 1);
-    delayMicroseconds(0);
+    delayMicroseconds(CONTROLLER_TIMING);
   }
   return buttons;
 }
