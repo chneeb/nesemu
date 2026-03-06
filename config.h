@@ -24,7 +24,7 @@
 //#define SKIP_MENU
 
 //Define and it will directly boot the ROM from the list
-#define BOOT_ROM 0
+//#define BOOT_ROM 0
 
 // Sound Settings, Note: DO NOT assign anything else to pins 25 or 26, those are used by I2S
 #define CONFIG_SOUND_ENABLED
@@ -66,7 +66,7 @@
 //#define SHOW_SPI_TRANSFER_TIME	//in micro seconds
 //#define SHOW_RENDER_VIDEO_TIME	//render & SPI in micro seconds
 
-//#define CHEAP_YELLOW_DISPLAY_CONF
+#define CHEAP_YELLOW_DISPLAY_CONF
 #ifndef CHEAP_YELLOW_DISPLAY_CONF
 
 // LCD Settings using VSPI bus (a must for 80MHz operation)
@@ -81,7 +81,7 @@
 #define CONFIG_HW_LCD_MOSI_GPIO 23 // 13
 
 // SD card pin mapping (Flash card)
-//#define CONFIG_SD_CARD
+#define CONFIG_SD_CARD
 #define CONFIG_SD_MISO 12 // 19
 #define CONFIG_SD_MOSI 13 // 23
 #define CONFIG_SD_SCK 14  // 18
@@ -144,8 +144,8 @@
 // Default I2C ESP32: GPIO 22 (SCL) and GPIO 21 (SDA) 
 // NES Mini input pin mapping 
 #define CONFIG_HW_CONTROLLER_NESMINI  //Define to use NES Mini controller
-#define CONFIG_HW_NESMINI_SDA 21 //    # I2C SDA
-#define CONFIG_HW_NESMINI_SCL 22 //    # I2C SDL
+#define CONFIG_HW_NESMINI_SDA 22 //    # I2C SDA 21 (22 CYD)
+#define CONFIG_HW_NESMINI_SCL 27 //    # I2C SDL 22 (27 CYD)
 
 // PSX input pin mapping 
 //#define CONFIG_HW_CONTROLLER_PSX	//Define to use PSX controller

@@ -103,10 +103,10 @@ static int ram_write(uint32 address, uint8 value)
 
 static int trigger_sram_save(uint32 address, uint8 value)
 {
-   uint8 originalValue = ram_read(address);
-   if (originalValue != value)
+   uint8 *sramByte = nes.rominfo->sram + (address - 0x6000);
+   if (*sramByte != value)
    {
-      // Only trigger SRAM save if something really chaged
+      *sramByte = value;
       nes.saveSramCountdown = 5;
    }
    return 1;
