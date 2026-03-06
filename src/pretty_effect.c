@@ -14,7 +14,7 @@
 #include "pretty_effect.h"
 #include "driver/gpio.h"
 #include "charPixels.h"
-#include "esp_deep_sleep.h"
+#include "esp_sleep.h"
 #include "menu.h"
 #include "Controller.h"
 #include "../config.h"

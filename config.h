@@ -24,7 +24,7 @@
 //#define SKIP_MENU
 
 //Define and it will directly boot the ROM from the list
-//#define BOOT_ROM 0
+#define BOOT_ROM 0
 
 // Sound Settings, Note: DO NOT assign anything else to pins 25 or 26, those are used by I2S
 #define CONFIG_SOUND_ENABLED
@@ -66,22 +66,44 @@
 //#define SHOW_SPI_TRANSFER_TIME	//in micro seconds
 //#define SHOW_RENDER_VIDEO_TIME	//render & SPI in micro seconds
 
+//#define CHEAP_YELLOW_DISPLAY_CONF
+#ifndef CHEAP_YELLOW_DISPLAY_CONF
+
 // LCD Settings using VSPI bus (a must for 80MHz operation)
 // LCD pin mapping
-#define CONFIG_HW_LCD_RESET_GPIO -1 //Define IO pin for LCD reset (-1 = disabled)
-#define CONFIG_HW_LCD_BL_GPIO -1 //Define IO pin for PWM back lite LED (-1 = disabled)
+
+#define CONFIG_HW_LCD_RESET_GPIO 16 // 27 Define IO pin for LCD reset (-1 = disabled)
+#define CONFIG_HW_LCD_BL_GPIO 4 // 21 Define IO pin for PWM back lite LED (-1 = disabled)
 #define CONFIG_HW_LCD_DC_GPIO 2
-#define CONFIG_HW_LCD_CS_GPIO 5
-#define CONFIG_HW_LCD_CLK_GPIO 18
-#define CONFIG_HW_LCD_MISO_GPIO 19
-#define CONFIG_HW_LCD_MOSI_GPIO 23
+#define CONFIG_HW_LCD_CS_GPIO 5   // 15
+#define CONFIG_HW_LCD_CLK_GPIO 18  // 14
+#define CONFIG_HW_LCD_MISO_GPIO 19 // 12
+#define CONFIG_HW_LCD_MOSI_GPIO 23 // 13
 
 // SD card pin mapping (Flash card)
+//#define CONFIG_SD_CARD
+#define CONFIG_SD_MISO 12 // 19
+#define CONFIG_SD_MOSI 13 // 23
+#define CONFIG_SD_SCK 14  // 18
+#define CONFIG_SD_CS 15   // 5
+
+#else // CHEAP_YELLOW_DISPLAY_CONF
+#define LCD_SPI_CLOCK_RATE SPI_MASTER_FREQ_40M  //40MHz
+#define CONFIG_HW_LCD_RESET_GPIO -1 //  Define IO pin for LCD reset (-1 = disabled)
+#define CONFIG_HW_LCD_BL_GPIO 21 //  Define IO pin for PWM back lite LED (-1 = disabled)
+#define CONFIG_HW_LCD_DC_GPIO 2
+#define CONFIG_HW_LCD_CS_GPIO 15   // 
+#define CONFIG_HW_LCD_CLK_GPIO 14  // 
+#define CONFIG_HW_LCD_MISO_GPIO 12 // 
+#define CONFIG_HW_LCD_MOSI_GPIO 13 // 
+
 #define CONFIG_SD_CARD
-#define CONFIG_SD_MISO 12
-#define CONFIG_SD_MOSI 13
-#define CONFIG_SD_SCK 14
-#define CONFIG_SD_CS 15
+#define CONFIG_SD_MISO 19
+#define CONFIG_SD_MOSI 23
+#define CONFIG_SD_SCK 18
+#define CONFIG_SD_CS 5
+
+#endif // #ifndef CHEAP_YELLOW_DISPLAY_CONF
 
 //----------------------------------
 //Enable only one controller type!!!
@@ -97,10 +119,10 @@
 //CLOCK |o o/ 3V3
 //GND   |o_/
 //
-#define CONFIG_HW_CONTROLLER_NES	//Define to use NES controller
-#define CONFIG_HW_NES_DAT 21    //    # MISO
-#define CONFIG_HW_NES_LATCH 27  //    # CS
-#define CONFIG_HW_NES_CLK 22    //    # CLK
+//#define CONFIG_HW_CONTROLLER_NES	//Define to use NES controller
+#define CONFIG_HW_NES_DAT  21   //  # MISO
+#define CONFIG_HW_NES_LATCH 27  //  # CS
+#define CONFIG_HW_NES_CLK 22    //  # CLK
 
 // SNES input pin mapping 
 //       _
@@ -118,6 +140,12 @@
 #define CONFIG_HW_SNES_DAT 21    //    # MISO
 #define CONFIG_HW_SNES_LATCH 27  //    # CS
 #define CONFIG_HW_SNES_CLK 22    //    # CLK
+
+// Default I2C ESP32: GPIO 22 (SCL) and GPIO 21 (SDA) 
+// NES Mini input pin mapping 
+#define CONFIG_HW_CONTROLLER_NESMINI  //Define to use NES Mini controller
+#define CONFIG_HW_NESMINI_SDA 21 //    # I2C SDA
+#define CONFIG_HW_NESMINI_SCL 22 //    # I2C SDL
 
 // PSX input pin mapping 
 //#define CONFIG_HW_CONTROLLER_PSX	//Define to use PSX controller

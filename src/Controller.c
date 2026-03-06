@@ -25,6 +25,10 @@
 #include "esp_deep_sleep.h"
 #include "Controller.h"
 
+#ifdef CONFIG_HW_CONTROLLER_NESMINI
+#include "wii_i2c.h"
+#endif
+
 //Bit0 Bit1 Bit2 Bit3 Bit4 Bit5 Bit6 Bit7
 //SLCT           STRT UP   RGHT DOWN LEFT
 //Bit8 Bit9 Bt10 Bt11 Bt12 Bt13 Bt14 Bt15
@@ -55,7 +59,7 @@
 
 #define DELAY() asm("nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop; nop;")
 
-#if defined(CONFIG_HW_CONTROLLER_PSX) || defined(CONFIG_HW_CONTROLLER_GPIO) || defined(CONFIG_HW_CONTROLLER_NES) || defined(CONFIG_HW_CONTROLLER_SNES)
+#if defined(CONFIG_HW_CONTROLLER_PSX) || defined(CONFIG_HW_CONTROLLER_GPIO) || defined(CONFIG_HW_CONTROLLER_NES) || defined(CONFIG_HW_CONTROLLER_SNES) || defined(CONFIG_HW_CONTROLLER_NESMINI)
 
 int volume, bright;
 int inpDelay;
@@ -145,6 +149,65 @@ int SNES_poll()
     digitalWrite(CONFIG_HW_SNES_CLK, 1);
     delayMicroseconds(CONTROLLER_TIMING);
   }
+  return buttons;
+}
+#endif
+
+#ifdef CONFIG_HW_CONTROLLER_NESMINI
+
+enum NESMINI_Button
+{
+  NESMINI_A = 0,
+  NESMINI_B = 1,
+  NESMINI_SELECT = 2,
+  NESMINI_START = 3,
+  NESMINI_UP = 4,
+  NESMINI_DOWN = 5,
+  NESMINI_LEFT = 6,
+  NESMINI_RIGHT = 7,
+};
+
+//This has to be initialized once
+void NESMINI_init()
+{
+	int i2c_error = 0;
+  if (i2c_error = wii_i2c_init(0 /*WII_I2C_PORT*/, CONFIG_HW_NESMINI_SDA, CONFIG_HW_NESMINI_SCL) != 0) {
+    printf("ERROR initializing wii i2c controller, %d\n", i2c_error);
+    return;
+  }
+
+  const unsigned char *ident = wii_i2c_read_ident();
+  unsigned int controller_type = 0;
+
+  controller_type = wii_i2c_decode_ident(ident);
+  switch (controller_type) {
+  case WII_I2C_IDENT_NUNCHUK: printf("-> nunchuk detected\n"); break;
+  case WII_I2C_IDENT_CLASSIC: printf("-> classic controller detected\n"); break;
+  case WII_I2C_IDENT_NESMINI: printf("-> nes mini controller detected\n"); break;
+  default:                    printf("-> unknown controller detected: 0x%06x\n", controller_type); break;
+  }
+  wii_i2c_request_state();
+}
+
+int NESMINI_poll()
+{
+  const unsigned char *data = wii_i2c_read_state();
+  wii_i2c_request_state();
+  int buttons = 0;
+  //wii_i2c_nesmini_state state;
+  //wii_i2c_decode_nesmini(data, &state);
+
+  if(data != NULL) {
+  buttons |= ((data[7] & 0x10) ? 0 : 1 << NESMINI_A);
+  buttons |= ((data[7] & 0x40) ? 0 : 1 << NESMINI_B);
+  buttons |= ((data[6] & 0x10) ? 0 : 1 << NESMINI_SELECT);
+  buttons |= ((data[6] & 0x04) ? 0 : 1 << NESMINI_START);
+  buttons |= ((data[7] & 0x01) ? 0 : 1 << NESMINI_UP);
+  buttons |= ((data[6] & 0x40) ? 0 : 1 << NESMINI_DOWN);
+  buttons |= ((data[7] & 0x02) ? 0 : 1 << NESMINI_LEFT);
+  buttons |= ((data[6] & 0x80) ? 0 : 1 << NESMINI_RIGHT);
+  }
+
   return buttons;
 }
 #endif
@@ -290,6 +353,20 @@ int ReadControllerInput()
   if (!((Button >> SNES_L) & 1))      b2b1 -= MENU_BUTTON;  
 #endif
 
+#ifdef CONFIG_HW_CONTROLLER_NESMINI
+  int Button = NESMINI_poll();
+  if ((Button >> NESMINI_UP) & 1)     b2b1 -= PSX_UP;
+  if ((Button >> NESMINI_DOWN) & 1)   b2b1 -= PSX_DOWN;
+  if ((Button >> NESMINI_RIGHT) & 1)  b2b1 -= PSX_RIGHT;
+  if ((Button >> NESMINI_LEFT) & 1)   b2b1 -= PSX_LEFT;
+  if ((Button >> NESMINI_SELECT) & 1) b2b1 -= PSX_SELECT;
+  if ((Button >> NESMINI_START) & 1)  b2b1 -= PSX_START;
+  if ((Button >> NESMINI_B) & 1)      b2b1 -= B_BUTTON;
+  if ((Button >> NESMINI_A) & 1)      b2b1 -= A_BUTTON;
+  if (((Button >> NESMINI_SELECT) & 1) && ((Button >> NESMINI_LEFT) & 1))  b2b1 -= MENU_BUTTON;
+  if (((Button >> NESMINI_SELECT) & 1) && ((Button >> NESMINI_START) & 1)) b2b1 -= POWER_BUTTON;
+#endif
+
   if (isMenuPressed(b2b1) && inpDelay == 0)
   {
     showMenu = !showMenu;
@@ -399,6 +476,11 @@ void ControllerInit()
 #ifdef CONFIG_HW_CONTROLLER_SNES
   SNES_init();
   printf("SNES Control initated\n");
+#endif
+
+#ifdef CONFIG_HW_CONTROLLER_NESMINI
+  NESMINI_init();
+  printf("NESMINI Control initated\n");
 #endif
 
 #ifdef CONFIG_HW_CONTROLLER_GPIO

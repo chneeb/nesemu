@@ -66,7 +66,7 @@
 ledc_channel_config_t ledc_channel;
 
 #if PIN_NUM_BCKL >= 0
-*void initBCKL()
+void initBCKL()
 {
     ledc_timer_config_t ledc_timer = {
         .duty_resolution = LEDC_TIMER_13_BIT,
@@ -77,7 +77,7 @@ ledc_channel_config_t ledc_channel;
     ledc_timer_config(&ledc_timer);
 
     ledc_channel.channel = LEDC_LS_CH3_CHANNEL;
-    ledc_channel.duty = 500;
+    ledc_channel.duty = 6150;
     ledc_channel.gpio_num = PIN_NUM_BCKL;
     ledc_channel.speed_mode = LEDC_LS_MODE;
     ledc_channel.timer_sel = LEDC_LS_TIMER;
@@ -88,7 +88,7 @@ ledc_channel_config_t ledc_channel;
 
 void setBrightness(int bright)
 {
-    /*int duty=1000;
+    int duty=1000;
 	if(bright == -2)duty=0;
 	if(bright == 0)duty=1000;
 	if(bright == 1)duty=2050;
@@ -96,8 +96,7 @@ void setBrightness(int bright)
 	if(bright == 3)duty=6150;
 	if(bright == 4)duty=8190;
 	ledc_set_duty(ledc_channel.speed_mode, ledc_channel.channel, duty);
-    ledc_update_duty(ledc_channel.speed_mode, ledc_channel.channel);*/
-    setBright(bright);
+    ledc_update_duty(ledc_channel.speed_mode, ledc_channel.channel);
 }
 
 static void spi_write_byte(const uint8_t data)
